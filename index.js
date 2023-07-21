@@ -34,21 +34,32 @@ app.post('/num', async (req, res) => {
     	const sub =  req.body.sub || '';
 console.log(num,city,branch)
 try{
-	while(tryCount > 0){
-		let data = await resultNum(num,city,branch,sub)
+	let data = await resultNum(num,city,branch,sub)
+	while(tryCount > 0){	
 		if(data == 'error'){
 			data = await resultNum(num,city,branch,sub)
 		}else if(data == null){
 			res.json({status : "error" , message : null});
 			tryCount = 0
+			return
 		}else if(data.length == 0){
 			res.json({status : "notFound" , message : data})
 			tryCount = 0
+			return
 		}else{
 			res.json({status : "success" , message : data})
 			tryCount = 0
+			return
 		}
 	}
+		if(data == 'error' || data == null){
+			res.json({status : "error" , message : null});
+		}else if(data.length == 0){
+			res.json({status : "notFound" , message : data})
+		}else{
+			res.json({status : "success" , message : data})	
+		}
+	
 	
 
 }catch(err){
