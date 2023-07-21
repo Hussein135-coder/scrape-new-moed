@@ -24,16 +24,33 @@ app.get('/',(req,res)=>{
     res.send("Ok")
 })
 
-
+let tryCount = 5;
 app.post('/num', async (req, res) => {
+	tryCount = 5;
+	console.log(tryCount)
 	const num = req.body.id;
 	const city = req.body.city;
-    const branch =  req.body.br;
-    const sub =  req.body.sub || '';
+   	 const branch =  req.body.br;
+    	const sub =  req.body.sub || '';
 console.log(num,city,branch)
 try{
-	const data = await resultNum(num,city,branch,sub)
-	res.json({status : "success" , message : data})
+	while(tryCount > 0){
+		let data = await resultNum(num,city,branch,sub)
+		if(data == 'error'){
+			data = await resultNum(num,city,branch,sub)
+		}else if(data == null){
+			res.json({status : "error" , message : null});
+			tryCount = 0
+		}else if(data.length == 0){
+			res.json({status : "notFound" , message : data})
+			tryCount = 0
+		}else{
+			res.json({status : "success" , message : data})
+			tryCount = 0
+		}
+	}
+	
+
 }catch(err){
 	res.json({status : "error" , message : null});
 }
@@ -55,7 +72,8 @@ const options = {
 // Number
 const resultNum = async (num,city,branch,sub)=>{
     try {
-			const formData = new FormData();
+	   		tryCount--;		
+	    		const formData = new FormData();
 			formData.append("stnumber",num);
 			formData.append("branch", branch);
 			formData.append("city", city);
@@ -97,6 +115,8 @@ const resultNum = async (num,city,branch,sub)=>{
 			const mother = document.querySelector('.student-info .info-5 div:last-child');
 			const school = document.querySelector('.student-info .info-6 div:last-child');
 			const result = document.querySelector('.student-info .info-7 div:last-child');
+	    		const errorReq = document.querySelector('.message');
+			const notFound = document.querySelector('.be-sure');
 
 			message['id']  = id?.textContent
 			message['name']  = name?.textContent
@@ -112,7 +132,12 @@ const resultNum = async (num,city,branch,sub)=>{
 				message['m'+(i+1)] = marks[i].textContent.trim()
 			}
 			
-			if(message['name']){
+			if(errorReq != null){
+				console.log(tryCount)
+				return 'error';
+			}else if(notFound != null){
+				return [];
+			}else if(message['name']){
 				return [message];
 			}else{
 				return null
@@ -120,10 +145,8 @@ const resultNum = async (num,city,branch,sub)=>{
 			
 }
 	catch (error) {
-		console.log("Errrrrrrrrrrror",error)
-		return [{
-			message : "خطأ بالرقم أو المحافظة"
-		}]
+		console.log(error)
+		return null
 	}
 }
 
