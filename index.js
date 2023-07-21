@@ -92,8 +92,9 @@ const resultNum = async (num,city,branch,sub)=>{
 
 
 			const response = await axios.request(options)
+	                 cookies =await response.headers.get('set-cookie')
 			const data = await response.data;
-			cookies = response.headers.get('set-cookie')
+			
 			console.log(cookies)
 			const options2 = {
 				method: "post",
