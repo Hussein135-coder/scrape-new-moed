@@ -134,9 +134,9 @@ const resultNum = async (num,city,branch,sub)=>{
 			formData.append("sub-branch", sub);
 
 
-			//const response = await axios.request(options)
-	                // cookies =await response.headers.get('set-cookie')
-			//const data = await response.data;
+			const response = await axios.request(options)
+	                 cookies =await response.headers.get('set-cookie')
+			const data = await response.data;
 			
 			//console.log(cookies)
 			const options2 = {
@@ -149,8 +149,8 @@ const resultNum = async (num,city,branch,sub)=>{
 				   "User-Agent" : "Mozilla/5.0 ",
 					 "Upgrade-Insecure-Requests" : "1",
 				 "Content-Type" : "application/x-www-form-urlencoded",
-			         "Cookie" : "PHPSESSID=7plud9soec5k8cuambngcrm6tg"
-				},
+			         "Cookie" : cookies[0]
+					 },
 				data : formData
 			}
 
